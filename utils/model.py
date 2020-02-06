@@ -3,7 +3,7 @@ from keras.layers import Embedding
 from keras.layers import Input, Dense, LSTM, TimeDistributed
 
 
-def seq2seq_model_builder(embed_layer, VOCAB_SIZ, MAX_LEN, HIDDEN_DIM=300):
+def seq2seq_model_builder(embed_layer, VOCAB_SIZE, MAX_LEN, HIDDEN_DIM=300):
 
     encoder_inputs = Input(shape=(MAX_LEN, ), dtype='int32',)
     encoder_embedding = embed_layer(encoder_inputs)
