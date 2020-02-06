@@ -1,15 +1,14 @@
-from keras.preprocessing.sequence import pad_sequences
-from keras.preprocessing.text import Tokenizer
 from keras.layers import Embedding
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
 import sys
-import pandas as pd
-import numpy as np
 import codecs
+import numpy as np
+import pandas as pd
+import support.config as c
 import matplotlib.pyplot as plt
-from model import seq2seq_model_builder
+from utils.model import seq2seq_model_builder
 
-sys.path.append(r'C:/Users/sbhatnagar4/Desktop/encoder-decoder-keras')
-from preprocessing import config as c
 
 def get_glove():
     embeddings_index = {}
@@ -55,22 +54,18 @@ def plot_loss(history):
 
 
 def train_model():
-
     decoder_texts = get_inputs(c.decoder_input)
     encoder_texts = get_inputs(c.encoder_input)
-
-    VOCAB_SIZE = 14999
-    tokenizer = Tokenizer(num_words=VOCAB_SIZE)
+    tokenizer = Tokenizer(num_words=c.VOCAB_SIZE)
     tokenizer.fit_on_texts(decoder_texts + encoder_texts)
     word_index = tokenizer.word_index
 
     index2word = {}
     for k, v in word_index.items():
-        if v < 15000:
+        if v < c.VOCAB_SIZE:
             index2word[v] = k
-        if v > 15000:
+        if v > c.VOCAB_SIZE:
             continue
-
     word2index = {}
     for k, v in index2word.items():
         word2index[v] = k
@@ -79,20 +74,16 @@ def train_model():
 
     encoder_sequences = tokenizer.texts_to_sequences(encoder_texts)
     decoder_sequences = tokenizer.texts_to_sequences(decoder_texts)
-    encoder_sequences = encoder_sequences[:200]
-    decoder_sequences = decoder_sequences[:200]
-
-    VOCAB_SIZE = len(index2word) + 1
-    MAX_LEN = 20
-
+    encoder_sequences = encoder_sequences[:c.SAMPLE_LEN]
+    decoder_sequences = decoder_sequences[:c.SAMPLE_LEN]
+    
     encoder_input_data = pad_sequences(
-        encoder_sequences, maxlen=MAX_LEN, dtype='int32', padding='post', truncating='post')
+        encoder_sequences, maxlen=c.MAX_LEN, dtype='int32', padding='post', truncating='post')
     decoder_input_data = pad_sequences(
-        decoder_sequences, maxlen=MAX_LEN, dtype='int32', padding='post', truncating='post')
-
-    num_samples = len(encoder_sequences)
+        decoder_sequences, maxlen=c.MAX_LEN, dtype='int32', padding='post', truncating='post')
     decoder_output_data = np.zeros(
-        (num_samples, MAX_LEN, VOCAB_SIZE), dtype="float32")
+        (c.SAMPLE_LEN, c.MAX_LEN, c.VOCAB_SIZE), dtype="float32")
+
     for i, seqs in enumerate(decoder_input_data):
         for j, seq in enumerate(seqs):
             if seq > 0:
@@ -100,19 +91,20 @@ def train_model():
 
     embeddings_index = get_glove()
     embedding_matrix = embedding_matrix_creater(
-        embeddings_index, 50, word_index=word2index)
-
-    embed_layer = Embedding(input_dim=VOCAB_SIZE,
-                            output_dim=50, trainable=True,)
+        embeddings_index, c.embedding_dim, word_index=word2index)
+    embed_layer = Embedding(input_dim=c.VOCAB_SIZE,
+                            output_dim=c.embedding_dim, trainable=True,)
     embed_layer.build((None,))
     embed_layer.set_weights([embedding_matrix])
-
-    model = seq2seq_model_builder(embed_layer, VOCAB_SIZE, MAX_LEN)
+    model = seq2seq_model_builder(embed_layer, c.VOCAB_SIZE, c.MAX_LEN)
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
+
     history = model.fit([encoder_input_data, decoder_input_data],
-                        decoder_output_data, epochs=5, validation_split=0.2)
-    plot_loss(history)
+                        decoder_output_data, batch_size=c.batch_size, epochs=c.epochs, validation_split=c.validation_split)
+    
+    if c.plot_loss:
+        plot_loss(history)
 
 
 if __name__ == "__main__":

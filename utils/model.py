@@ -16,7 +16,6 @@ def seq2seq_model_builder(embed_layer, VOCAB_SIZE, MAX_LEN, HIDDEN_DIM=300):
     decoder_outputs, _, _ = decoder_LSTM(
         decoder_embedding, initial_state=[state_h, state_c])
 
-    # dense_layer = Dense(VOCAB_SIZE, activation='softmax')
     outputs = TimeDistributed(
         Dense(VOCAB_SIZE, activation='softmax'))(decoder_outputs)
     model = Model([encoder_inputs, decoder_inputs], outputs)
