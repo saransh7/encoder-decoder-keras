@@ -8,7 +8,7 @@ def seq2seq_model_builder(embed_layer, VOCAB_SIZE, MAX_LEN, HIDDEN_DIM=300):
     encoder_embedding = embed_layer(encoder_inputs)
     encoder_LSTM = LSTM(HIDDEN_DIM, return_state=True)
     encoder_outputs, state_h, state_c = encoder_LSTM(encoder_embedding)
-    encoder_states = [ state_h , state_c ]
+    encoder_states = [state_h, state_c]
     decoder_inputs = Input(shape=(MAX_LEN, ))
     decoder_embedding = embed_layer(decoder_inputs)
     decoder_LSTM = LSTM(HIDDEN_DIM, return_state=True, return_sequences=True)
@@ -28,8 +28,10 @@ def seq2seq_model_builder(embed_layer, VOCAB_SIZE, MAX_LEN, HIDDEN_DIM=300):
     decoder_states = [state_h, state_c]
     outputs = TimeDistributed(
         Dense(VOCAB_SIZE, activation='softmax'))(decoder_outputs)
-    decoder_model = Model([decoder_inputs] + decoder_states_inputs, [outputs] + decoder_states)
+    decoder_model = Model(
+        [decoder_inputs] + decoder_states_inputs, [outputs] + decoder_states)
     return model, encoder_model, decoder_model
+
 
 def decode_sequence(input_seq, encoder_model, decoder_model, index2word):
     states_value = encoder_model.predict(input_seq)
@@ -38,7 +40,7 @@ def decode_sequence(input_seq, encoder_model, decoder_model, index2word):
     stop_condition = False
     decoded_sentence = []
     counter = 0
-    
+
     while not stop_condition:
         output_tokens, h, c = decoder_model.predict(
             [target_seq] + states_value)
@@ -47,7 +49,7 @@ def decode_sequence(input_seq, encoder_model, decoder_model, index2word):
         print(sampled_word)
         decoded_sentence += [sampled_word]
         if (sampled_token_index == 2 or
-            len(decoded_sentence) > 20):
+                len(decoded_sentence) > 20):
             stop_condition = True
         target_seq[0, counter] = sampled_token_index
         states_value = [h, c]
