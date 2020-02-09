@@ -1,17 +1,11 @@
 import os
 import re
 import codecs
-import string
-import pickle
-import operator
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 import config as c
 
 
 def list_to_txt(inputs, file_path):
-    with open(file_path, 'w') as f:
+    with open(file_path, 'w', encoding='utf8') as f:
         for input in inputs:
             f.write(input + '\n')
 
