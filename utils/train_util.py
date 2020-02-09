@@ -2,6 +2,7 @@ from keras.layers import Embedding
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 import sys
+import pickle
 import codecs
 import numpy as np
 import pandas as pd
@@ -60,12 +61,16 @@ def train_model():
     tokenizer.fit_on_texts(decoder_texts + encoder_texts)
     word_index = tokenizer.word_index
 
+    with open(c.tokenizer_path, 'wb') as handle:
+        pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
     index2word = {}
     for k, v in word_index.items():
         if v < c.VOCAB_SIZE:
             index2word[v] = k
         if v > c.VOCAB_SIZE:
             continue
+
     word2index = {}
     for k, v in index2word.items():
         word2index[v] = k
@@ -76,7 +81,7 @@ def train_model():
     decoder_sequences = tokenizer.texts_to_sequences(decoder_texts)
     encoder_sequences = encoder_sequences[:c.SAMPLE_LEN]
     decoder_sequences = decoder_sequences[:c.SAMPLE_LEN]
-    
+
     encoder_input_data = pad_sequences(
         encoder_sequences, maxlen=c.MAX_LEN, dtype='int32', padding='post', truncating='post')
     decoder_input_data = pad_sequences(
@@ -96,13 +101,18 @@ def train_model():
                             output_dim=c.embedding_dim, trainable=True,)
     embed_layer.build((None,))
     embed_layer.set_weights([embedding_matrix])
-    model = seq2seq_model_builder(embed_layer, c.VOCAB_SIZE, c.MAX_LEN)
+    model, encoder_model, decoder_model = seq2seq_model_builder(
+        embed_layer, c.VOCAB_SIZE, c.MAX_LEN)
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
 
     history = model.fit([encoder_input_data, decoder_input_data],
-                        decoder_output_data, batch_size=c.batch_size, epochs=c.epochs, validation_split=c.validation_split)
-    
+                        decoder_output_data, batch_size=40, epochs=1, validation_split=c.validation_split)
+
+    model.save(c.model_path)
+    model.save(c.encoder_model_path)
+    model.save(c.decoder_model_path)
+
     if c.plot_loss:
         plot_loss(history)
 

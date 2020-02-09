@@ -10,7 +10,7 @@ def process_text(text):
     sequence = pad_sequences(tokens, maxlen=c.MAX_LEN, dtype='int32', padding='post', truncating='post')
     return sequence
 
-    def reply_text(text):
+def reply_text(text):
     sequence = process_text(text)
     encoder_model = load_model(c.encoder_model_path)
     decoder_model = load_model(c.decoder_model_path)
