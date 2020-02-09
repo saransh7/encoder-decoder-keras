@@ -45,6 +45,13 @@ In order to decode an unknown sequence a different approach is taken:
 - `<BOS>` and `<EOS>` tags are added to `decoder_inputs` to mark sequence beginning and end 
 ### Algorithm Summary
 - Sentences are tokenized, indexed and [glove](https://nlp.stanford.edu/projects/glove/) embeddings are used; Shape(samples, max_limit, glove_dim)
-
+- Embedding matrix; Shape(vocab, golve_dim)
+#### Encoder
+- Encoder input - Sequence; Shape(None, 20)
+- Encoder output - States; Shape(None, 200)
+#### Decoder
+- Decoder input - States; Shape(None, 20)
+- Decoder output - Outputs; Shape(None, 20, 200)
+- Time distributed - Outputs; Shape(None, 20, 15000)
 
 ![Love](https://forthebadge.com/images/badges/built-with-love.svg)
