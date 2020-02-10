@@ -27,7 +27,10 @@ SAMPLE_LEN = 10000
 embedding_dim = 50 # from glove
 hidden_dim = 300 # lstm hidden dim
 epochs = 2
-batch_size = 10
+batch_size = 32
 validation_split = 0.2
 
 plot_loss = True
+
+# dummy input
+sample_input = 'hey how are you'

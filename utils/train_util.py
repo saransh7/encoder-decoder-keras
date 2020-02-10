@@ -110,8 +110,8 @@ def train_model():
                         decoder_output_data, batch_size=40, epochs=1, validation_split=c.validation_split)
 
     model.save(c.model_path)
-    model.save(c.encoder_model_path)
-    model.save(c.decoder_model_path)
+    encoder_model.save(c.encoder_model_path)
+    decoder_model.save(c.decoder_model_path)
 
     if c.plot_loss:
         plot_loss(history)

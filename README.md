@@ -44,7 +44,6 @@ In order to decode an unknown sequence a different approach is taken:
     decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
     decoder_outputs, state_h, state_c = decoder_LSTM(
     decoder_embedding, initial_state=decoder_states_inputs)
-
 ```
 ## Model Summary
 ### Data

@@ -1,3 +1,4 @@
+import numpy as np
 from keras.models import Model
 from keras.layers import Embedding
 from keras.layers import Input, Dense, LSTM, TimeDistributed
@@ -39,7 +40,7 @@ def decode_sequence(input_seq, encoder_model, decoder_model, index2word):
     target_seq[0, 0] = 1
     stop_condition = False
     decoded_sentence = []
-    counter = 0
+    counter = 1
 
     while not stop_condition:
         output_tokens, h, c = decoder_model.predict(
