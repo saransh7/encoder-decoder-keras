@@ -37,7 +37,15 @@ In order to decode an unknown sequence a different approach is taken:
 - Feed state vectors and dummy sequence to the decoder
 - Append sampled word to the target sequence
 - Repeat until sapled character is end-of-sequence token(here *eos*) or limit is reached
+```
+    encoder_model = Model(encoder_inputs, encoder_states)
+    decoder_state_input_h = Input(shape=(None,))
+    decoder_state_input_c = Input(shape=(None,))
+    decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
+    decoder_outputs, state_h, state_c = decoder_LSTM(
+    decoder_embedding, initial_state=decoder_states_inputs)
 
+```
 ## Model Summary
 ### Data
 - We'll be using [Cornell Movie--Dialogs Corpus](https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html) as our dataset
