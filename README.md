@@ -61,4 +61,9 @@ In order to decode an unknown sequence a different approach is taken:
 - Decoder output - Outputs; Shape(None, 20, 200)
 - Time distributed - Outputs; Shape(None, 20, 15000)
 
+## Working with Code
+- Download data into `data` folder
+- `main.py` (with no args) for training
+- `main.py -r` : reply mode; `main.py -r --message=$message` - replying to the $message
+
 ![Love](https://forthebadge.com/images/badges/built-with-love.svg)
